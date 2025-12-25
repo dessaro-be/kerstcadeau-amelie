@@ -1,5 +1,5 @@
-import { ComponentExample } from "@/components/component-example";
+import { AmelieWizard } from "@/components/amelie/amelie-wizard";
 
 export default function Page() {
-return <ComponentExample />;
+  return <AmelieWizard />;
 }
