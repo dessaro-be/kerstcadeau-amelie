@@ -13,22 +13,28 @@ import type { WizardQuestion, WizardAnswers } from "@/lib/wizard-data";
 
 interface QuestionCardProps {
   question: WizardQuestion;
-  currentValue: string | null;
-  onSelect: (questionId: keyof WizardAnswers, value: string) => void;
+  selectedValues: string[];
+  onToggle: (questionId: keyof WizardAnswers, value: string) => void;
+  onNext: () => void;
   onBack?: () => void;
   showBack: boolean;
+  hasSelections: boolean;
   currentStep: number;
   totalSteps: number;
+  isLastStep: boolean;
 }
 
 export function QuestionCard({
   question,
-  currentValue,
-  onSelect,
+  selectedValues,
+  onToggle,
+  onNext,
   onBack,
   showBack,
+  hasSelections,
   currentStep,
   totalSteps,
+  isLastStep,
 }: QuestionCardProps) {
   return (
     <Card className="w-full max-w-md">
@@ -47,23 +53,30 @@ export function QuestionCard({
             <OptionButton
               key={option.value}
               option={option}
-              isSelected={currentValue === option.value}
-              onSelect={(value) => onSelect(question.id, value)}
+              isSelected={selectedValues.includes(option.value)}
+              onSelect={(value) => onToggle(question.id, value)}
             />
           ))}
         </div>
 
-        {showBack && (
-          <div className="pt-2">
+        <div className="flex gap-2 pt-4">
+          {showBack && (
             <Button
-              variant="ghost"
+              variant="outline"
               onClick={onBack}
-              className="w-full text-muted-foreground"
+              className="flex-1"
             >
               Terug
             </Button>
-          </div>
-        )}
+          )}
+          <Button
+            onClick={onNext}
+            disabled={!hasSelections}
+            className={showBack ? "flex-1" : "w-full"}
+          >
+            {isLastStep ? "Bekijk resultaat" : "Volgende"}
+          </Button>
+        </div>
       </CardContent>
     </Card>
   );

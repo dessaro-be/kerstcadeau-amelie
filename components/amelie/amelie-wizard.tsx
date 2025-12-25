@@ -16,8 +16,11 @@ export function AmelieWizard() {
     currentQuestion,
     totalSteps,
     isFirstStep,
+    isLastStep,
+    hasSelections,
     startWizard,
-    selectOption,
+    toggleOption,
+    goNext,
     goBack,
     restart,
   } = useWizard();
@@ -39,12 +42,15 @@ export function AmelieWizard() {
     <WizardStep direction={direction} stepKey={currentStep}>
       <QuestionCard
         question={currentQuestion}
-        currentValue={answers[currentQuestion.id]}
-        onSelect={selectOption}
+        selectedValues={answers[currentQuestion.id]}
+        onToggle={toggleOption}
+        onNext={goNext}
         onBack={goBack}
         showBack={!isFirstStep}
+        hasSelections={hasSelections}
         currentStep={currentStep}
         totalSteps={totalSteps}
+        isLastStep={isLastStep}
       />
     </WizardStep>
   );

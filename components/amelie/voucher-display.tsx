@@ -10,7 +10,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import type { WizardAnswers } from "@/lib/wizard-data";
+import { WizardAnswers, VALUE_DISPLAY } from "@/lib/wizard-data";
 
 interface VoucherDisplayProps {
   answers: WizardAnswers;
@@ -20,31 +20,14 @@ interface VoucherDisplayProps {
 const LABELS: Record<keyof WizardAnswers, string> = {
   vibe: "Vibe",
   location: "Bestemming",
-  activity: "Activiteit",
+  activity: "Activiteiten",
   dinner: "Diner",
 };
 
-const VALUE_DISPLAY: Record<string, string> = {
-  // Vibes
-  stad: "Stad",
-  natuur: "Natuur",
-  culinair: "Culinair",
-  // Locations
-  parijs: "Parijs",
-  antwerpen: "Antwerpen",
-  kopenhagen: "Kopenhagen",
-  maastricht: "Maastricht",
-  // Activities
-  spa: "Spa",
-  museum: "Museum",
-  theater: "Theater",
-  shoppen: "Shoppen",
-  // Dinner
-  romantic: "Romantisch",
-  casual: "Casual",
-  "fine-dining": "Fine Dining",
-  "street-food": "Street Food",
-};
+function formatValues(values: string[]): string {
+  if (values.length === 0) return "-";
+  return values.map((v) => VALUE_DISPLAY[v] || v).join(", ");
+}
 
 export function VoucherDisplay({ answers, onRestart }: VoucherDisplayProps) {
   const handlePrint = () => {
@@ -66,10 +49,10 @@ export function VoucherDisplay({ answers, onRestart }: VoucherDisplayProps) {
         <CardContent className="space-y-4">
           <div className="space-y-3">
             {(Object.keys(LABELS) as Array<keyof WizardAnswers>).map((key) => (
-              <div key={key} className="flex justify-between items-center">
-                <span className="text-muted-foreground">{LABELS[key]}</span>
-                <span className="font-medium">
-                  {answers[key] ? VALUE_DISPLAY[answers[key]!] || answers[key] : "-"}
+              <div key={key} className="flex justify-between items-start gap-4">
+                <span className="text-muted-foreground shrink-0">{LABELS[key]}</span>
+                <span className="font-medium text-right">
+                  {formatValues(answers[key])}
                 </span>
               </div>
             ))}
@@ -78,7 +61,7 @@ export function VoucherDisplay({ answers, onRestart }: VoucherDisplayProps) {
           <Separator />
 
           <p className="text-center text-muted-foreground italic">
-            &quot;Geniet van jouw perfecte dag!&quot;
+            &quot;Ik voorzie alles om die dag onvergetelijk te maken.&quot;
           </p>
         </CardContent>
 

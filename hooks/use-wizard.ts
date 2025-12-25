@@ -22,24 +22,42 @@ export function useWizard() {
     setDirection("forward");
   }, []);
 
-  const selectOption = useCallback(
+  // Toggle selection for multi-select
+  const toggleOption = useCallback(
     (questionId: keyof WizardAnswers, value: string) => {
-      setAnswers((prev) => ({ ...prev, [questionId]: value }));
+      setAnswers((prev) => {
+        const currentValues = prev[questionId];
+        const isSelected = currentValues.includes(value);
 
-      // Auto-advance after short delay for smooth UX
-      setTimeout(() => {
-        if (currentStep < WIZARD_QUESTIONS.length - 1) {
-          setDirection("forward");
-          setCurrentStep((prev) => prev + 1);
+        if (isSelected) {
+          // Remove the value
+          return {
+            ...prev,
+            [questionId]: currentValues.filter((v) => v !== value),
+          };
         } else {
-          // Last question answered, show loading
-          setPhase("loading");
-          setTimeout(() => setPhase("voucher"), 2500);
+          // Add the value
+          return {
+            ...prev,
+            [questionId]: [...currentValues, value],
+          };
         }
-      }, 300);
+      });
     },
-    [currentStep]
+    []
   );
+
+  // Go to next step (called when user clicks "Volgende")
+  const goNext = useCallback(() => {
+    if (currentStep < WIZARD_QUESTIONS.length - 1) {
+      setDirection("forward");
+      setCurrentStep((prev) => prev + 1);
+    } else {
+      // Last question, show loading then voucher
+      setPhase("loading");
+      setTimeout(() => setPhase("voucher"), 2500);
+    }
+  }, [currentStep]);
 
   const goBack = useCallback(() => {
     if (currentStep > 0) {
@@ -55,6 +73,10 @@ export function useWizard() {
     setDirection("forward");
   }, []);
 
+  const currentQuestion = WIZARD_QUESTIONS[currentStep];
+  const currentSelections = answers[currentQuestion?.id] || [];
+  const hasSelections = currentSelections.length > 0;
+
   return {
     // State
     phase,
@@ -63,15 +85,17 @@ export function useWizard() {
     direction,
 
     // Computed
-    currentQuestion: WIZARD_QUESTIONS[currentStep],
+    currentQuestion,
     totalSteps: WIZARD_QUESTIONS.length,
     progress: ((currentStep + 1) / WIZARD_QUESTIONS.length) * 100,
     isFirstStep: currentStep === 0,
     isLastStep: currentStep === WIZARD_QUESTIONS.length - 1,
+    hasSelections,
 
     // Actions
     startWizard,
-    selectOption,
+    toggleOption,
+    goNext,
     goBack,
     restart,
   };
