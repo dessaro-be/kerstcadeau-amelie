@@ -19,17 +19,17 @@ export function OptionButton({
     <Button
       variant={isSelected ? "default" : "outline"}
       className={cn(
-        "h-auto min-h-[4rem] w-full flex-col gap-1 py-4 transition-all duration-200",
-        isSelected && "ring-2 ring-primary ring-offset-2 scale-[1.02]",
+        "h-auto min-h-[3.5rem] w-full flex-col gap-0.5 py-2 px-2 transition-all duration-200 text-left",
+        isSelected && "ring-2 ring-primary ring-offset-1 scale-[1.02]",
         !isSelected && "hover:scale-[1.02] hover:border-primary/50"
       )}
       onClick={() => onSelect(option.value)}
     >
-      <span className="text-base font-medium">{option.label}</span>
+      <span className="text-sm font-medium leading-tight">{option.label}</span>
       {option.description && (
         <span
           className={cn(
-            "text-xs font-normal",
+            "text-[10px] font-normal leading-tight",
             isSelected ? "text-primary-foreground/80" : "text-muted-foreground"
           )}
         >

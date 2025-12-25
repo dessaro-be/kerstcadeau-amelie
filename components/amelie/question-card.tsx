@@ -37,8 +37,8 @@ export function QuestionCard({
   isLastStep,
 }: QuestionCardProps) {
   return (
-    <Card className="w-full max-w-md">
-      <CardHeader className="text-center">
+    <Card className="w-full max-w-lg">
+      <CardHeader className="text-center pb-4">
         <div className="text-muted-foreground mb-2 text-sm">
           Stap {currentStep + 1} van {totalSteps}
         </div>
@@ -46,9 +46,14 @@ export function QuestionCard({
         {question.subtitle && (
           <CardDescription>{question.subtitle}</CardDescription>
         )}
+        {selectedValues.length > 0 && (
+          <div className="text-sm text-primary font-medium mt-2">
+            {selectedValues.length} geselecteerd
+          </div>
+        )}
       </CardHeader>
       <CardContent className="space-y-4">
-        <div className="grid gap-3">
+        <div className="grid grid-cols-2 gap-2 max-h-[50vh] overflow-y-auto pr-1">
           {question.options.map((option) => (
             <OptionButton
               key={option.value}
@@ -59,7 +64,7 @@ export function QuestionCard({
           ))}
         </div>
 
-        <div className="flex gap-2 pt-4">
+        <div className="flex gap-2 pt-4 sticky bottom-0 bg-card">
           {showBack && (
             <Button
               variant="outline"

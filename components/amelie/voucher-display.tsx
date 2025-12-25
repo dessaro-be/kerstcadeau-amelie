@@ -18,11 +18,12 @@ interface VoucherDisplayProps {
   onRestart: () => void;
 }
 
-const LABELS: Record<keyof WizardAnswers, string> = {
-  vibe: "Vibe",
-  location: "Bestemming",
-  activity: "Activiteiten",
-  dinner: "Diner",
+const LABELS: Record<keyof WizardAnswers, { label: string; emoji: string }> = {
+  vibe: { label: "Vibe", emoji: "✨" },
+  location: { label: "Bestemming", emoji: "📍" },
+  activity: { label: "Activiteiten", emoji: "🎯" },
+  dinner: { label: "Diner", emoji: "🍽️" },
+  extras: { label: "Extra's", emoji: "🎁" },
 };
 
 function formatValues(values: string[]): string {
@@ -36,15 +37,29 @@ function generateVoucherText(answers: WizardAnswers): string {
     "",
     "Speciaal voor jou samengesteld:",
     "",
-    `✨ Vibe: ${formatValues(answers.vibe)}`,
-    `📍 Bestemming: ${formatValues(answers.location)}`,
-    `🎯 Activiteiten: ${formatValues(answers.activity)}`,
-    `🍽️ Diner: ${formatValues(answers.dinner)}`,
-    "",
-    "_\"Ik voorzie alles om die dag onvergetelijk te maken.\"_",
-    "",
-    "❤️ Amélie",
   ];
+
+  if (answers.vibe.length > 0) {
+    lines.push(`✨ Vibe: ${formatValues(answers.vibe)}`);
+  }
+  if (answers.location.length > 0) {
+    lines.push(`📍 Bestemming: ${formatValues(answers.location)}`);
+  }
+  if (answers.activity.length > 0) {
+    lines.push(`🎯 Activiteiten: ${formatValues(answers.activity)}`);
+  }
+  if (answers.dinner.length > 0) {
+    lines.push(`🍽️ Diner: ${formatValues(answers.dinner)}`);
+  }
+  if (answers.extras.length > 0) {
+    lines.push(`🎁 Extra's: ${formatValues(answers.extras)}`);
+  }
+
+  lines.push("");
+  lines.push("_\"Ik voorzie alles om die dag onvergetelijk te maken.\"_");
+  lines.push("");
+  lines.push("❤️ Amélie");
+
   return lines.join("\n");
 }
 
@@ -92,14 +107,21 @@ export function VoucherDisplay({ answers, onRestart }: VoucherDisplayProps) {
 
         <CardContent className="space-y-4">
           <div className="space-y-3">
-            {(Object.keys(LABELS) as Array<keyof WizardAnswers>).map((key) => (
-              <div key={key} className="flex justify-between items-start gap-4">
-                <span className="text-muted-foreground shrink-0">{LABELS[key]}</span>
-                <span className="font-medium text-right">
-                  {formatValues(answers[key])}
-                </span>
-              </div>
-            ))}
+            {(Object.keys(LABELS) as Array<keyof WizardAnswers>).map((key) => {
+              // Only show categories that have selections
+              if (answers[key].length === 0) return null;
+
+              return (
+                <div key={key} className="flex justify-between items-start gap-4">
+                  <span className="text-muted-foreground shrink-0">
+                    {LABELS[key].emoji} {LABELS[key].label}
+                  </span>
+                  <span className="font-medium text-right">
+                    {formatValues(answers[key])}
+                  </span>
+                </div>
+              );
+            })}
           </div>
 
           <Separator />
