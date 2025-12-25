@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -29,9 +30,52 @@ function formatValues(values: string[]): string {
   return values.map((v) => VALUE_DISPLAY[v] || v).join(", ");
 }
 
+function generateVoucherText(answers: WizardAnswers): string {
+  const lines = [
+    "🎁 *Amélie's Avontuur* 🎁",
+    "",
+    "Speciaal voor jou samengesteld:",
+    "",
+    `✨ Vibe: ${formatValues(answers.vibe)}`,
+    `📍 Bestemming: ${formatValues(answers.location)}`,
+    `🎯 Activiteiten: ${formatValues(answers.activity)}`,
+    `🍽️ Diner: ${formatValues(answers.dinner)}`,
+    "",
+    "_\"Ik voorzie alles om die dag onvergetelijk te maken.\"_",
+    "",
+    "❤️ Amélie",
+  ];
+  return lines.join("\n");
+}
+
 export function VoucherDisplay({ answers, onRestart }: VoucherDisplayProps) {
+  const [copied, setCopied] = useState(false);
+
+  const voucherText = generateVoucherText(answers);
+
   const handlePrint = () => {
     window.print();
+  };
+
+  const handleWhatsApp = () => {
+    const encodedText = encodeURIComponent(voucherText);
+    window.open(`https://wa.me/?text=${encodedText}`, "_blank");
+  };
+
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(voucherText);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (err) {
+      console.error("Failed to copy:", err);
+    }
+  };
+
+  const handleEmail = () => {
+    const subject = encodeURIComponent("Amélie's Avontuur - Jouw Cadeau!");
+    const body = encodeURIComponent(voucherText);
+    window.open(`mailto:?subject=${subject}&body=${body}`, "_blank");
   };
 
   return (
@@ -66,10 +110,28 @@ export function VoucherDisplay({ answers, onRestart }: VoucherDisplayProps) {
         </CardContent>
 
         <CardFooter className="no-print flex flex-col gap-3 pt-2">
-          <Button onClick={handlePrint} className="w-full">
-            Voucher Printen / Downloaden
-          </Button>
-          <Button variant="outline" onClick={onRestart} className="w-full">
+          {/* Share buttons */}
+          <div className="grid grid-cols-2 gap-2 w-full">
+            <Button onClick={handleWhatsApp} className="w-full bg-[#25D366] hover:bg-[#128C7E]">
+              WhatsApp
+            </Button>
+            <Button onClick={handleCopy} variant="outline" className="w-full">
+              {copied ? "Gekopieerd!" : "Kopieer tekst"}
+            </Button>
+          </div>
+
+          <div className="grid grid-cols-2 gap-2 w-full">
+            <Button onClick={handleEmail} variant="outline" className="w-full">
+              E-mail
+            </Button>
+            <Button onClick={handlePrint} variant="outline" className="w-full">
+              Printen
+            </Button>
+          </div>
+
+          <Separator className="my-2" />
+
+          <Button variant="ghost" onClick={onRestart} className="w-full text-muted-foreground">
             Opnieuw beginnen
           </Button>
         </CardFooter>
